@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, Pressable } from "react-native"
-import { Link, useRouter } from "expo-router"
+import { View, Text, StyleSheet } from "react-native"
+import { Link, useNavigation, useRouter } from "expo-router"
 import ThemedView from "../components/ThemedView"
 import ThemedLogo from "../components/ThemedLogo"
 import ThemedText from "../components/ThemedText"
@@ -12,6 +12,12 @@ const Home = () => {
 
   const router = useRouter()
 
+  const router2 = useNavigation()
+
+  const handleClick = () => {
+    router2.navigate("mother_register")
+  }
+
   return(
     <ThemedView style={styles.container}>
 
@@ -23,22 +29,34 @@ const Home = () => {
 
       <ThemedLogo style={styles.img} />
 
-      <Spacer />
+      <Spacer height={20} />
 
-      <ThemedButton onPress={() => router.push("/register")} style={{backgroundColor: Colors.primary}}>
-        <ThemedText style={[styles.btn_text, {color: '#fff'}]}>I'M A MOTHER</ThemedText>
+      <ThemedText style={styles.intro_text}>THE QUICKEST WAY TO FIND TRUSTED CARE</ThemedText>
+
+      <Spacer height={20} />
+
+      <ThemedButton onPress={handleClick} style={{backgroundColor: Colors.primary,  height: 76,
+        width: 252, borderRadius: 25,
+      }}>
+        <ThemedText style={[styles.btn_text, {color: '#ffffff'}]}>I'M SEEKING CARE</ThemedText>
       </ThemedButton>
 
-      <ThemedButton onPress={() => router.push("/register2")} style={{backgroundColor: '#aed6f1'}}>
-        <ThemedText style={[styles.btn_text, {color: '#000'}]}>I'M A WATCHER</ThemedText>
+      <Spacer height={20} />
+
+      <ThemedButton onPress={() => router.push("/watcher_register1")} style={{backgroundColor: '#CBE9F4',  height: 76,
+        width: 252, borderRadius: 25,
+      }}>
+        <ThemedText style={[styles.btn_text, {color: '#000000'}]}>I'M A WATCHER</ThemedText>
       </ThemedButton>
+
+      <Spacer height={20} />
 
       <ThemedView style={styles.section}>
-        <ThemedText>
+        <ThemedText style={styles.bottom_text}>
           Already sign up?
         </ThemedText>
-        <Link style={{marginLeft: 8}} href="/login">
-          <ThemedText style={{color: 'blue'}}>LOGIN</ThemedText>
+        <Link style={{marginLeft: 12}} href="/login">
+          <ThemedText style={[styles.bottom_text,{color: '#03097E'}]}>LOGIN</ThemedText>
         </Link>
       </ThemedView>
 
@@ -54,10 +72,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   img: {
-    height: '45%'
+    height: 350,
+    width: 465
   },
   btn_text: {
-    fontWeight: 'bold',
+    fontWeight: 400,
+    fontFamily: 'IrishGrover',
+    fontSize: 20,
+    textAlign: 'center'
   },
   link_text: {
     color: 'blue',
@@ -65,6 +87,19 @@ const styles = StyleSheet.create({
   section: {
     flexDirection: 'row',
     alignItems: 'center'
+  },
+  intro_text: {
+    fontWeight: 400,
+    fontSize: 15,
+    fontFamily: 'IrishGrover',
+    color: '#000000',
+    textAlign: 'center'
+  },
+  bottom_text: {
+    fontSize: 16,
+    fontWeight: 400,
+    fontFamily: 'InriaSerif',
+    color: '#000000'
   }
 
 })

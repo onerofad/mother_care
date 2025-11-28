@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TextInput } from 'react-native'
+import { StyleSheet, TextInput } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 
@@ -41,60 +41,67 @@ const Register2 = () => {
     <ThemedView style={styles.container}>
         <Spacer height={60} />
 
-        <ThemedView>
-            <ThemedHeader>QUICK WATCH</ThemedHeader>
-        </ThemedView>
+        <ThemedView style={styles.section}>
+             <ThemedHeader>QUICK WATCH</ThemedHeader>
+            <MaterialIcons
+                name='arrow-back-ios'
+                size={30}
+                onPress={() => router.push("/")}
+                style={{position: 'relative', left: 80}}
+            />
+
+        </ThemedView>   
        
         <Spacer height={20} />
 
-        <ThemedCard style={{backgroundColor: Colors.background, borderWidth: 5, borderColor: Colors.primary, paddingVertical: 20}}>
+        <ThemedCard style={{height: 630, borderWidth: 5, borderColor: Colors.primary, paddingHorizontal: 20, paddingVertical: 40}}>
             <TextInput style={styles.textInput} placeholder='First Name' />
 
-            <Spacer height={20} />
+            <Spacer height={15} />
 
             <TextInput style={styles.textInput} placeholder='Last Name' />
 
-            <Spacer height={20} />
+            <Spacer height={15} />
 
             <TextInput style={styles.textInput} placeholder='Email' />
 
-            <Spacer height={20} />
+            <Spacer height={15} />
 
             <TextInput style={styles.textInput} placeholder='Password' />
 
-            <Spacer height={20} />
+            <Spacer height={15} />
 
             <TextInput style={styles.textInput} placeholder='Zip Code' />
 
-            <Spacer height={20} />
+            <Spacer height={15} />
             
             <TextInput style={styles.textInput} placeholder='Phone number' />
 
-            <Spacer height={20} />
+            <Spacer height={15} />
 
             <ThemedView style={[styles.section, {color: '#f2f2f2', justifyContent: 'space-around'}]}>
-                <ThemedText>Date of birth</ThemedText>
-                <ThemedText>Gender</ThemedText>
+                <ThemedText style={{color: '#000000', fontFamily: 'InriaSerifBold', fontSize: 13, fontWeight: 400}}>Date of birth</ThemedText>
+                <ThemedText style={{color: '#000000', fontFamily: 'InriaSerifBold', fontSize: 13, fontWeight: 400}}>Gender</ThemedText>
             </ThemedView>
 
             <ThemedView style={[styles.section, {justifyContent: 'space-between'}]}>
                 <ThemedView style={[styles.section]}>
                     <TextInput
                         placeholder='MM'
-                        style={[styles.text, {width: 40}]}
+                        style={[styles.text, {width: 40, color: '#000000', fontFamily: 'InriaSerifBold', fontSize: 13, fontWeight: 400}]}
                     />
                     <TextInput
                         placeholder='DD'
-                        style={[styles.text, {width: 40, marginLeft: 3}]}                   
+                        style={[styles.text, {width: 40, marginLeft: 3, color: '#000000', fontFamily: 'InriaSerifBold', fontSize: 13, fontWeight: 400}]}                   
                      />
                     <TextInput
                         placeholder='YYYY'
-                        style={[styles.text, {width: 50, marginLeft: 3}]}                    />
+                        style={[styles.text, {width: 50, marginLeft: 3, color: '#000000', fontFamily: 'InriaSerifBold', fontSize: 13, fontWeight: 400}]}                    />
                 </ThemedView>
 
                 <ThemedView style={styles.section}>
                     <RadioGroup
-                        containerStyle={{flexDirection: 'row', backgroundColor: '#ccc', marginLeft: 5}}
+                        containerStyle={{flexDirection: 'row', backgroundColor: '#D9D9D9', marginLeft: 5, color: '#000000', fontFamily: 'InriaSerifBold', fontSize: 13, fontWeight: 400}}
                         radioButtons={radioButtons}
                         selectedId={selectedId}
                         onPress={setSelectedId}
@@ -104,16 +111,18 @@ const Register2 = () => {
                
             </ThemedView>
 
+            <Spacer height={15} />
+
+            <ThemedButton
+                style={{backgroundColor: Colors.primary,  height: 57,
+                    width: 146, borderRadius: 7, alignSelf: 'center'
+                }}
+                onPress={() => router.push("/register3")}
+            >
+                <ThemedText style={{fontFamily: 'InriaSerif', fontSize: 13, fontWeight: 400, color: '#ffffff', textAlign: 'center'}}>SUBMIT</ThemedText>
+            </ThemedButton>
+
         </ThemedCard>
-
-        <Spacer height={20} />
-
-        <ThemedButton
-            style={{backgroundColor: Colors.primary}}
-            onPress={() => router.push("/register3")}
-        >
-            <Text style={{color: '#f2f2f2'}}>SUBMIT</Text>
-        </ThemedButton>
 
     </ThemedView>
   )
@@ -128,20 +137,19 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     textInput: {
-        height: 50,
+        height: 57,
         borderWidth: 1,
-        borderColor: '#000',
-        borderRadius: 5
+        borderColor: '#000000',
+        padding: 20
     },
     section: {
         flexDirection: 'row',
-        alignItems: 'center'
     },
     checkbox: {
         margin: 8
     },
     text: {
-        backgroundColor: '#ccc', 
+        backgroundColor: '#D9D9D9', 
         fontWeight: 'bold', 
         fontSize: 10, 
         textAlign: 'center', 

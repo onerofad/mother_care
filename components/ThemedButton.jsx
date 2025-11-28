@@ -11,11 +11,7 @@ export default ThemedButton
 
 const styles = StyleSheet.create({
     btn: {
-        paddingVertical: 20,
-        paddingHorizontal: 50,
-        borderRadius: 15,
-        marginVertical: 10,
-        alignItems: 'center',
+        justifyContent: 'center'
     },
     pressed: {
       opacity: 0.5

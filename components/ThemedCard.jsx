@@ -8,7 +8,7 @@ const ThemedCard = ({style, ...props}) => {
 
   const theme = Colors[colorScheme] ?? Colors.light
   return (
-    <View style={[{backgroundColor: Colors.primary}, styles.card, style]}
+    <View style={[styles.card, style]}
         {...props}
     />
   )
@@ -18,9 +18,7 @@ export default ThemedCard
 
 const styles = StyleSheet.create({
     card: {
-        borderRadius: 20,
-        paddingVertical: 100,
-        paddingHorizontal: 20,
-        width: '90%'
+        borderRadius: 13,
+        width: 340,
     }
 })

@@ -1,6 +1,6 @@
 {
   "expo": {
-    "scheme": "mothe_care",
+    "scheme": "mother-care",
     "name": "mother_care",
     "slug": "mother_care",
     "version": "1.0.0",
@@ -26,7 +26,23 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-router"
-    ]
+      "expo-router",
+      "expo-font"
+
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "6ec7a705-ec3d-48e6-bb8c-18e7af9d886c"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/6ec7a705-ec3d-48e6-bb8c-18e7af9d886c"
+    }
   }
 }

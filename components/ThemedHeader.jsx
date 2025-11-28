@@ -4,7 +4,7 @@ import { Colors } from '../constants/colors'
 
 const ThemedHeader = ({style, ...props}) => {
   return (
-    <Text style={[styles.title, style ]} 
+    <Text style={[styles.title, style, {fontFamily: 'IrishGrover'}]} 
         {...props}
     />
   )
@@ -14,9 +14,9 @@ export default ThemedHeader
 
 const styles = StyleSheet.create({
     title: {
-        fontWeight: 'bold',
-        fontSize: 22,
+        fontSize: 20,
         color: Colors.primary,
-        fontFamily: 'sans-serif'
+        fontWeight: 400,
+        textAlign: 'center'
       },
 })
