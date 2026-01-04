@@ -182,7 +182,10 @@ const styles = StyleSheet.create({
         textAlign: "center"
     },
     errorText: {
-        backgroundColor: '#ffffff',
+         backgroundColor: '#f5f5f5',
+        borderStyle: 'solid',
+        borderWidth: 1,
+        borderColor: '#000',
         width: 240,
         height: 100,
         borderRadius: 10,

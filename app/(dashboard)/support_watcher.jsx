@@ -12,6 +12,7 @@ import NavigationBar1 from '../../components/NavigationBar1'
 import ThemedButton from '../../components/ThemedButton'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { getSupport } from '../API'
+import NavigationWatcher1 from '../../components/NavigationWatcher1'
 
 const SupportWatcher = () => {
 
@@ -84,14 +85,11 @@ const SupportWatcher = () => {
 
         <ThemedHeader>QUICK WATCH</ThemedHeader>
 
-        <Spacer height={30} />
+        <Spacer height={60} />
         
-        <ThemedCard style={[styles.card]}>
-            <ThemedText style={[styles.addText]}>
+        <ThemedText style={[styles.addText]}>
                 How can we help you today!
-            </ThemedText>
-
-        </ThemedCard>
+        </ThemedText>
 
         <Spacer height={20} />
 
@@ -111,16 +109,16 @@ const SupportWatcher = () => {
             </KeyboardAvoidingView>
         </ThemedCard>
 
-        <Spacer height={50} />
+        <Spacer height={60} />
 
         <ThemedButton style={styles.btn} onPress={() => supportBtn()}>
             <ThemedText style={styles.btn_text}>Submit</ThemedText>
         </ThemedButton>
 
-        <Spacer height={100} />
+        <Spacer height={200} />
 
         <ThemedView style={{position: "absolute", bottom: 0}}>
-            <NavigationBar1 />
+            <NavigationWatcher1 />
         </ThemedView> 
 
         <Spacer height={20} /> 
@@ -203,6 +201,7 @@ const styles = StyleSheet.create({
         fontFamily: 'InriaSerif',
         fontSize: 20,
         fontWeight: 400,
+        textAlign: 'center'
        
     },
     centerText: {

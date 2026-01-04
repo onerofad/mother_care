@@ -79,7 +79,7 @@ const NavigationWatcher = () => {
   }
 
   const chat_router = () => {
-    router.push("/chat_watcher")
+    router.push("/chat_watcher1")
   }
 
   const timer_router = () => {

@@ -16,21 +16,21 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import StarRating from 'react-native-star-rating-widget'
 import { getWatchers } from '../API'
 
-const ProfileWatcher = () => {
+const ViewProfile = () => {
 
     const router = useRouter()
 
-    const [email, setEmail] = useState("")
+    const [id, setId] = useState("")
 
     const [rating, setRating] = useState(0)
 
     const [img, setImage] = useState(null)
 
-    const [cpr, setcpr] = useState(false)
-
-    const [firstaid, setfirstaid] = useState(false)
-
     const [watchers, setWatchers] = useState([])
+
+    const [cpr, set_cpr] = useState(false)
+
+    const [firstaid, set_firstaid] = useState(false)
 
 
     useEffect(() => {
@@ -39,10 +39,10 @@ const ProfileWatcher = () => {
 
     const getAllWatchers = async () => {
         try{
-            let em = await AsyncStorage.getItem("email")
-            setEmail(em)
+            let ID = await AsyncStorage.getItem("active_id")
+            setId(ID)
 
-            getWatchers().get("/").then(response => setWatchers(response.data.filter(w => w.email == em)))
+            getWatchers().get("/").then(response => setWatchers(response.data.filter(w => w.id == ID)))
             .catch(error => console.log('An error has occurred ' + error))
         }catch(error){
             console.log("An error has occurred ", error)
@@ -60,13 +60,13 @@ const ProfileWatcher = () => {
                     <MaterialIcons
                         name='arrow-back-ios'
                         size={30}
-                        onPress={() => router.push("/watcher_home")}
+                        onPress={() => router.push("/active_home")}
                         style={{alignSelf: 'flex-end'}}
                     />
             
                     <Spacer height={10} />
 
-                    <ThemedText style={[styles.active_text]}>PROFILE</ThemedText>
+                    <ThemedText style={[styles.active_text]}>ACTIVE</ThemedText>
 
                     <Spacer height={20} />
 
@@ -75,7 +75,7 @@ const ProfileWatcher = () => {
                         <ThemedCard style={[styles.card_box]} key={watcher.id}>
                         <Image
                             source={{ uri: watcher.picture}}
-                            style={[styles.img, {alignSelf: 'center'}]}
+                            style={[styles.img]}
                         />
 
                         <Spacer height={20} />
@@ -106,12 +106,11 @@ const ProfileWatcher = () => {
 
                         <Spacer height={20} />
 
-                        <ThemedView style={{backgroundColor:  '#9FAEA4'}}>
-                            <ThemedText style={[styles.text, {fontFamily: 'InriaSerif', fontWeight: 400, textAlign: 'center'}]}>
+                        <ThemedView style={{backgroundColor:  '#9FAEA4', paddingHorizontal: 30, marginHorizontal: 10}}>
+                            <ThemedText style={[styles.text, {fontFamily: 'InriaSerif', fontWeight: 400}]}>
                                 {watcher.about}
                             </ThemedText>
                         </ThemedView>
-
                     <Spacer height={40} />
 
                     <ThemedView style={[styles.certified]}>
@@ -127,6 +126,9 @@ const ProfileWatcher = () => {
 
                             }
                         </ThemedView>
+
+                        <Spacer height={20} />
+
                         <ThemedView style={[styles.certified_view]}>
                             <ThemedText style={[styles.certified_text]}>
                                 First aid Certified
@@ -139,13 +141,32 @@ const ProfileWatcher = () => {
 
                             }
                         </ThemedView>
+
+                         <Spacer height={20} />
+
+                        <ThemedView style={[styles.certified_view]}>
+                            <ThemedText style={[styles.certified_text]}>
+                                Background check
+                            </ThemedText>
+                            {
+                                (watcher.backcheck === true) ?
+                                <ThemedView style={[styles.certified_box]}></ThemedView>
+                                :
+                                <ThemedView style={[styles.certified_box, {backgroundColor: '#9EA19E'}]}></ThemedView>
+
+                            }
+                        </ThemedView>
                     </ThemedView>
 
-                    <Spacer height={60} />
+                    <Spacer height={80} />
 
-                    <ThemedButton style={[styles.btn, {borderColor: '#000', borderWidth: 1, vorderStyle: 'solid'}]} onPress = {() => router.replace("/edit_profile_watcher")}>
-                        <ThemedText style={[styles.btn_text]}>Edit Profile</ThemedText>
+                    <ThemedButton style={[styles.btn]} onPress = {async() => {
+                        await AsyncStorage.setItem("email_to", watcher.email)
+                        router.replace("/make_request")
+                    }}>
+                        <ThemedText style={[styles.btn_text]}>Request</ThemedText>
                     </ThemedButton>
+
 
                     <Spacer height={40} />
 
@@ -172,14 +193,12 @@ const ProfileWatcher = () => {
 
                     </ThemedView>
 
-                    <Spacer height={40} />
-
+                    <Spacer height={30} />
 
                 </ThemedCard>
                         ))
                         
                 }
-
 
                 </ThemedView>
         
@@ -188,7 +207,7 @@ const ProfileWatcher = () => {
   )
 }
 
-export default ProfileWatcher
+export default ViewProfile
 
 const styles = StyleSheet.create({
 
@@ -215,7 +234,8 @@ const styles = StyleSheet.create({
     img: {
         height: 315,
         width: '90%',
-        borderRadius: 8
+        borderRadius: 8,
+        alignSelf: 'center'
     },
     text_box: {
         flexDirection: 'row',
@@ -237,7 +257,8 @@ const styles = StyleSheet.create({
     location_rate: {
         flexDirection: 'row',
         justifyContent: 'space-evenly',
-        backgroundColor:  '#9FAEA4'
+        backgroundColor:  '#9FAEA4',
+        marginHorizontal: 20
     },
     location: {
         flexDirection: 'row',
@@ -251,16 +272,17 @@ const styles = StyleSheet.create({
         backgroundColor:  '#9FAEA4'
     },
      certified: {
-        flexDirection: 'row',
-        justifyContent: 'space-evenly',
+        alignItems: 'center',
+        //justifyContent: 'space-evenly',
         backgroundColor: '#9FAEA4'
     },
     certified_view: {
          backgroundColor: '#CBE9F4',
          flexDirection: 'row',
-         width: 140,
+         width: 260,
          height: 35,
-         justifyContent: 'space-evenly',
+         justifyContent: 'space-between',
+         paddingHorizontal: 20,
          alignItems: 'center',
          borderRadius: 10
     },
@@ -276,8 +298,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#3CC535'
     },
     btn: {
-        width: 160,
-        height: 45,
+        width: 120,
+        height: 40,
         backgroundColor: '#8B80B1',
         justifyContent: 'center',
         alignItems: 'center',
@@ -286,7 +308,7 @@ const styles = StyleSheet.create({
     },
     btn_text: {
         fontFamily: 'InriaSerifBold',
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: 700,
         color: '#fff',
         fontStyle: 'normal'

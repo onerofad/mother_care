@@ -23,7 +23,7 @@ export default function AnimatedCarousel2(){
                     autoPlay={false}
                     width={styles.container.width}
                     defaultIndex={1}
-                    height={170}
+                    height={310}
                     data={data} 
                     autoPlayInterval={8000}
                     mode="normal"

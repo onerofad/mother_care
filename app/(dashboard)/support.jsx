@@ -84,14 +84,12 @@ const Support = () => {
 
         <ThemedHeader>QUICK WATCH</ThemedHeader>
 
-        <Spacer height={30} />
+        <Spacer height={60} />
         
-        <ThemedCard style={[styles.card]}>
-            <ThemedText style={[styles.addText]}>
-                How can we help you today!
-            </ThemedText>
+        <ThemedText style={[styles.addText]}>
+            How can we help you today!
+        </ThemedText>
 
-        </ThemedCard>
 
         <Spacer height={20} />
 
@@ -111,13 +109,13 @@ const Support = () => {
             </KeyboardAvoidingView>
         </ThemedCard>
 
-        <Spacer height={50} />
+        <Spacer height={60} />
 
         <ThemedButton style={styles.btn} onPress={() => supportBtn()}>
             <ThemedText style={styles.btn_text}>Submit</ThemedText>
         </ThemedButton>
 
-        <Spacer height={100} />
+        <Spacer height={200} />
 
         <ThemedView style={{position: "absolute", bottom: 0}}>
             <NavigationBar1 />
@@ -202,7 +200,8 @@ const styles = StyleSheet.create({
         color: '#000000',
         fontFamily: 'InriaSerif',
         fontSize: 20,
-        fontWeight: 400,
+        fontWeight: 600,
+        textAlign: 'center'
        
     },
     centerText: {
@@ -222,7 +221,7 @@ const styles = StyleSheet.create({
         height: 150,
         borderWidth: 0,
         borderColor: '#000000',
-        padding: 20,
+        padding: 10,
     },
     text: {
         fontWeight: 400,

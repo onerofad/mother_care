@@ -5,23 +5,22 @@ import {
   MenuOption,
   MenuTrigger,
 } from 'react-native-popup-menu';
-import { Ionicons } from '@expo/vector-icons';
+import { Entypo, Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
- const RequestMenuWatcher = () =>  {
+ const ChatMenu = () =>  {
 
     const router = useRouter()
 
-    const getRequestList = () => {
-      router.push("/scheduleListWatcher")
+    const getRequestList = async () => {
+      router.push("/scheduleList")
     }
   
     return( 
     <Menu>  
       <MenuTrigger >
-        <Ionicons 
-            name='time-outline'
+        <Entypo
+            name='chat'
             size={40}
             color='#E6E6E6'
         />
@@ -30,7 +29,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
             optionsContainerStyle={{
                 width: 140, 
                 marginTop: 50,
-                marginLeft: 50,
+                marginLeft: -40,
                 paddingVertical: 10,
                 paddingHorizontal: 10,
                 backgroundColor: '#D9D9D9'
@@ -38,14 +37,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
             }} 
             customStyles={{optionsContainer: 'animated.View'}}
         >
-        <MenuOption 
+            <MenuOption r
                 customStyles={{optionText: {fontSize: 14, fontWeight: 700, color: '#000000', fontFamily: 'Teachers'}}} 
-                onSelect={() => router.push('/personal_list')} text='Personal List'  
-        />
-        <MenuOption 
+                onSelect={() => router.push("/make_request")} text='Accept Chat' 
+            />
+            {/*<MenuOption 
                 customStyles={{optionText: {fontSize: 14, fontWeight: 700, color: '#000000', fontFamily: 'Teachers'}}} 
-                onSelect={() => getRequestList()} text='Request List'  
-        />
+                onSelect={() => router.push('/mother_chat')} text='Chat Watcher'  />*/}
         </MenuOptions> 
     </Menu>
     )
@@ -75,4 +73,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default RequestMenuWatcher
+export default ChatMenu

@@ -352,7 +352,10 @@ const styles = StyleSheet.create({
         fontWeight: 400
     },
     errorText: {
-        backgroundColor: '#ffffff',
+         backgroundColor: '#f5f5f5',
+        borderStyle: 'solid',
+        borderWidth: 1,
+        borderColor: '#000',
         width: 240,
         height: 100,
         borderRadius: 10,
@@ -365,7 +368,10 @@ const styles = StyleSheet.create({
         paddingVertical: 10
     },
     modal_loading: {
-        backgroundColor: '#ffffff',
+         backgroundColor: '#f5f5f5',
+        borderStyle: 'solid',
+        borderWidth: 1,
+        borderColor: '#000',
         width: 180,
         height: 100,
         borderRadius: 10,

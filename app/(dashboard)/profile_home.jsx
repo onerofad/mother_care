@@ -1,4 +1,4 @@
-import { KeyboardAvoidingView, Platform, StyleSheet, Image, TextInput, Modal, SafeAreaView, ActivityIndicator, ScrollView } from 'react-native'
+import { KeyboardAvoidingView, Platform, StyleSheet, Image, TextInput, Modal, SafeAreaView, ActivityIndicator, ScrollView, Pressable } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
 
@@ -15,6 +15,16 @@ import { FontAwesome, MaterialCommunityIcons, MaterialIcons } from '@expo/vector
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as ImagePicker from 'expo-image-picker';
 import getUsers from '../API'
+import { Dropdown } from 'react-native-element-dropdown'
+
+
+const data0 = [
+    {'label': 'Texas', 'value': 'Texas'}
+]
+
+const data1 = [
+    {'label': 'Dallas', 'value': 'Dallas'}
+]
 
 const ProfileHome = () => {
 
@@ -27,6 +37,10 @@ const ProfileHome = () => {
     const [email, setEmail] = useState("")
 
     const [image, setImage] = useState(null);
+
+    const [state, setstate_location] = useState("")
+
+    const [city, setcity_location] = useState("")
 
     const [picture, setPicture] = useState(null);
 
@@ -49,11 +63,6 @@ const ProfileHome = () => {
                    let em = await AsyncStorage.getItem("email")
                    setEmail(em)
                    
-                   let pic = await AsyncStorage.getItem("picture")
-                   setPicture(pic)
-
-                   let abt = await AsyncStorage.getItem("about")
-                   setTellus(abt)
         }catch(error){
             console.log('An error has occured ' + error)
         }
@@ -119,16 +128,20 @@ const update = () => {
     }else if(image === null){
         setmodalText("Select an image")
         setvisible2()
+    }else if(state === ""){
+        setmodalText("State is required")
+        setvisible2()
+    }else if(city === ""){
+        setmodalText("City is required")
+        setvisible2()
     }else{
         setvisible1(true)
         setTimeout(async () => {
             setvisible1(false)
             let id = getDetails.id
-            let items = {about, picture}
-            await AsyncStorage.setItem("about", about)
-            await AsyncStorage.setItem("picture", picture)
+            let items = {about, picture, state, city}
             getUsers().patch(`/${id}/`, items)
-            .then(() => router.push("/login"))
+            .then(() => router.push("/mother_home"))
             .catch(error => console.log('An error has occurred ' + error))
         }, 3000)
     }
@@ -149,11 +162,11 @@ const update = () => {
         </ThemedView>
 
 
-        <ThemedHeader>QUICK WATCH</ThemedHeader>
+        <ThemedHeader>QUICK WATCH1</ThemedHeader>
 
-        <Spacer height={80} />
+        <Spacer height={40} />
 
-        <ThemedView style={[]}>
+        {/*<ThemedView style={[]}>
            <Image            
                 borderRadius={50} 
                 style={styles.image} 
@@ -166,9 +179,28 @@ const update = () => {
                 Change Picture
             </ThemedText>
             
+        </ThemedView>*/}
+
+        <ThemedView style={[]}>
+            {image == null ?
+                <Pressable                
+                    onPress={pickImage} 
+                    style={[styles.upload]}
+                >
+                </Pressable> :
+                <Image borderRadius={50} source={{ uri: image }} style={styles.image} />}
+
+                <Spacer height={30} />
+                
+                <ThemedText 
+                    style={[styles.upload_text]}
+                >
+                    Change Picture
+                </ThemedText>
+              
         </ThemedView>
 
-        <Spacer height={40} />
+        <Spacer height={20} />
 
         <ThemedCard style={[styles.card_box]}>
             <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
@@ -183,7 +215,41 @@ const update = () => {
             </KeyboardAvoidingView>
         </ThemedCard>
 
-        <Spacer height={40} />
+        <Spacer height={20} />
+
+        <ThemedText style={[styles.text, {textAlign: 'center'} ]}>Location</ThemedText>
+
+        <Spacer height={20} />
+
+        <ThemedView style={[styles.location]}>
+                    <ThemedView>
+                        <Dropdown
+                            data={data0}
+                            onChange={(item) => setstate_location(item.value)}
+                            valueField="value"
+                            labelField="label"
+                            style={{width: 90}}
+                            placeholder='State'
+                            value={state}
+        
+                        />
+                        
+                    </ThemedView>
+                    <ThemedView>
+                        <Dropdown
+                            data={data1}
+                            onChange={(item) => setcity_location(item.value)}
+                            valueField="value"
+                            labelField="label"
+                            style={{width: 90}}
+                            placeholder='City'
+                            value={city}
+                        />
+                       
+                    </ThemedView>
+                </ThemedView>
+
+                <Spacer height={60} />
 
         <ThemedButton
             style={[styles.btn]}
@@ -274,14 +340,14 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-evenly'
     },
-      image: {
+    image: {
     width:100,
     height: 100,
-    alignSelf: 'center'
+    alignSelf: 'center',
   },
   upload: {
-    width: 150, 
-    height: 150, 
+    width: 130, 
+    height: 130, 
     borderRadius: 100, 
     backgroundColor: Colors.primary,
     alignSelf: 'center'

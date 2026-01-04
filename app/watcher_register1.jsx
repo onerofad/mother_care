@@ -1,7 +1,7 @@
 import { StyleSheet, TextInput, Modal, SafeAreaView, ActivityIndicator} from 'react-native'
 import { Link, useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { FontAwesome, MaterialCommunityIcons} from '@expo/vector-icons'
+import { FontAwesome, Ionicons, MaterialCommunityIcons} from '@expo/vector-icons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 //Themed views
 
@@ -44,6 +44,8 @@ const WatcherRegister1 = () => {
     const [password, setPassword] = useState("")
     const [zipcode, setzipcode] = useState("")
     const [phoneno, setphone] = useState("")
+    const [visible, setVisible] = useState(false)
+    
 
     const [month, setmonth] = useState("")
     const [year, setyear] = useState("")
@@ -71,6 +73,11 @@ const WatcherRegister1 = () => {
 
     const selectedidClick = () => {
         setSelectedId
+    }
+
+     const cancel =  () => {
+        setVisible(false)
+        router.replace("/")
     }
 
     const handleCheck = (value) => {
@@ -155,25 +162,20 @@ const WatcherRegister1 = () => {
 
     }
 
+    const handleBack = async() => {
+        router.push("/")                
+    }
+
   return (
     <KeyboardAvoidingContainer>
     <ThemedView>
         <Spacer height={60} />
 
-        <ThemedView style={styles.section1}>
-            <ThemedHeader>QUICK WATCH</ThemedHeader>
-            <MaterialIcons
-                    name='arrow-back-ios'
-                    size={30}
-                    onPress={() => router.push("/")}
-                    style={{position: 'relative', left: 80}}
-            />
-        </ThemedView>
-       
+        <ThemedHeader>QUICK WATCH</ThemedHeader>
+
         <Spacer height={20} />
 
-        <Progress.Bar 
-            style={{
+        <Progress.Bar style={{
                 alignSelf: 'center'
             }} 
             width={300} 
@@ -181,6 +183,29 @@ const WatcherRegister1 = () => {
             progress={progress} 
             unfilledColor='#C9C6D5'
         />  
+       
+        <Spacer height={20} />
+
+        <ThemedView style={[styles.section3, {marginHorizontal: 20, justifyContent: 'space-between'}]}>
+            <ThemedButton style={[
+                styles.section3
+            ]} 
+            onPress={handleBack} >
+            <Ionicons
+                size={20} 
+                name='arrow-back' 
+            />
+            <ThemedText style={[styles.text, {color: '#000000', marginLeft: 5}]}>BACK</ThemedText>  
+            </ThemedButton>
+        
+            <ThemedButton onPress={() => setVisible(true)}>
+                <ThemedText 
+                style={[styles.text, {color: Colors.primary}]}>
+                 CANCEL
+            </ThemedText>
+            </ThemedButton>
+                   
+        </ThemedView>
 
         <Spacer height={20} />
 
@@ -247,7 +272,7 @@ const WatcherRegister1 = () => {
                     <ThemedView style={[styles.section]}> 
                          <TextInput
                             placeholder='MM'
-                            style={[styles.input_date, styles.text_font]}
+                            style={[styles.input_date, styles.text_font, {marginLeft: 0}]}
                             onChangeText={(mm) => setmonth(mm)}
                             value={month} 
                         />
@@ -267,7 +292,7 @@ const WatcherRegister1 = () => {
                     </ThemedView>
                 </ThemedView>
                 <ThemedView>
-                    <ThemedText style={[styles.text_font]}>Gemder</ThemedText>
+                    <ThemedText style={[styles.text_font]}>Gender</ThemedText>
                     <RadioGroup
                         containerStyle={[styles.radio_style]}
                         radioButtons={radioButtons}
@@ -303,7 +328,47 @@ const WatcherRegister1 = () => {
                 onPress={submitNow}
             >
             <ThemedText style={{fontFamily: 'InriaSerif', fontSize: 13, fontWeight: 400, color: '#ffffff', textAlign: 'center'}}>SUBMIT</ThemedText>
-            </ThemedButton>
+        </ThemedButton>
+
+        <Spacer height={40} />
+
+        <Modal
+            transparent
+            visible={visible}
+            animationType='none'
+        >
+            <ThemedView 
+                style={styles.modalContainer}
+            >
+                <ThemedText 
+                    style={styles.modalText}
+                >
+                    Are you sure you want to cancel?
+                </ThemedText>
+
+                <ThemedView 
+                    style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        width: '100%'
+                    }}
+                >
+                    <ThemedButton onPress={() => setVisible(false)}>
+                        <ThemedText style={styles.modalText1}>
+                            NO, LET'S FIND CARE
+                        </ThemedText>
+                    </ThemedButton>
+
+                    <ThemedButton onPress={cancel}>
+                        <ThemedText style={[styles.modalText1 ]}>
+                            YES, CANCEL
+                        </ThemedText>
+                    </ThemedButton>
+                </ThemedView>
+
+            </ThemedView>
+
+        </Modal>
         <Modal 
             animationType='none'
             transparent
@@ -364,6 +429,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignSelf: 'center'
     },
+     section3: {
+        flexDirection: 'row',
+    },
     section: {
         flexDirection: 'row',
         justifyContent: 'space-between'
@@ -384,17 +452,19 @@ const styles = StyleSheet.create({
         color: '#000000'
     },
     input_date: {
-        width: 54,
+        width: 50,
         height: 35,
         backgroundColor: '#D9D9D9',
         borderRadius: 8,
         textAlign: 'center',
-        marginLeft: 2
+        marginLeft: 2,
+        paddingVertical: 0
     },
     radio_style: {
         flexDirection: 'row', 
         backgroundColor: '#D9D9D9', 
-        marginLeft: 5, 
+        marginLeft: 5,
+        paddingHorizontal: 0 
     },
     text2: {
         fontFamily: 'InriaSerif',
@@ -408,8 +478,16 @@ const styles = StyleSheet.create({
         fontWeight: 700,
         color: '#000000'
     },
+    text: {
+        fontFamily: 'IrishGrover',
+        fontWeight: 400,
+        fontSize: 13
+    },
      modal_loading: {
-        backgroundColor: '#ffffff',
+         backgroundColor: '#f5f5f5',
+        borderStyle: 'solid',
+        borderWidth: 1,
+        borderColor: '#000',
         width: 180,
         height: 100,
         borderRadius: 10,
@@ -420,6 +498,36 @@ const styles = StyleSheet.create({
         marginTop: 200,
         elevation: 40,
     },
+     modalContainer: {
+        backgroundColor: '#f5f5f5',
+        borderStyle: 'solid',
+        borderWidth: 1,
+        borderColor: '#000',
+        width: 280,
+        height: 150,
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignSelf: 'center',
+        paddingHorizontal: 20,
+        marginTop: 200,
+        elevation: 40,
+    },
+    modalText: {
+        color: '#000000',
+        fontWeight: 700,
+        fontSize: 18,
+        textAlign: 'center' ,
+        marginBottom: 30,
+        fontFamily: 'IrishGrover'
+    
+    },
+     modalText1: {
+        fontWeight: 700,
+        fontSize: 12,
+        color: Colors.primary,
+        fontFamily: "InstrumentSans",
+    },
     loading_text: {
         textAlign: 'center', 
         fontFamily: 'IrishGrover',
@@ -428,7 +536,10 @@ const styles = StyleSheet.create({
         fontWeight: 400
     },
     errorText: {
-        backgroundColor: '#ffffff',
+         backgroundColor: '#f5f5f5',
+        borderStyle: 'solid',
+        borderWidth: 1,
+        borderColor: '#000',
         width: 240,
         height: 100,
         borderRadius: 10,

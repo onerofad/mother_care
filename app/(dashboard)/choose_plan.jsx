@@ -89,7 +89,7 @@ const ChoosePlan = () => {
 
                 {/*<Spacer height={20} />*/}
 
-                <ThemedButton style={[styles.btn]}>
+                <ThemedButton style={[styles.btn]} onPress={() => router.push("/card_details")}>
                     <ThemedText style={[styles.text, {color: '#000000', fontSize: 14}]}>Start for free</ThemedText>
                 </ThemedButton>
 
@@ -146,7 +146,7 @@ const ChoosePlan = () => {
 
                 {/*<Spacer height={65} />*/}
 
-                <ThemedButton style={[styles.btn]}>
+                <ThemedButton style={[styles.btn]} onPress={() => router.push("/card_details")}>
                     <ThemedText style={[styles.text, {color: '#000000', fontSize: 14}]}>
                         Upgrade
                     </ThemedText>

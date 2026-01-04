@@ -6,6 +6,7 @@ import { Ionicons, Entypo, } from '@expo/vector-icons'
 import { Link, useRouter } from 'expo-router'
 import ProfileMenu from './ProfileMenu'
 import RequestMenu from './RequestMenu'
+import ChatMenu from './ChatMenu'
 
 const NavigationBar = () => {
 
@@ -37,7 +38,7 @@ const NavigationBar = () => {
   }
 
   const chat_router = () => {
-    router.push("/chat_home")
+    router.push("/chat_accepted")
   }
 
   const timer_router = () => {
@@ -63,6 +64,7 @@ const NavigationBar = () => {
                 color='#E6E6E6'
                 onPress={() => chat_router()}
             />
+            
             <ThemedText 
                 style={styles.active_text}
             >

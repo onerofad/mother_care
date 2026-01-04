@@ -12,6 +12,7 @@ import { useRouter } from 'expo-router'
 import ThemedButton from '../../components/ThemedButton'
 import NavigationBar1 from '../../components/NavigationBar1'
 import { getWatchers } from '../API'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const ActiveHome = () => {
 
@@ -24,8 +25,8 @@ const ActiveHome = () => {
     },[])
 
     const getAllWatchers = () => {
-        getWatchers().get("/").then(response => setwatchers(response.data.filter(w => w.status == true)))
-        .then(error => console.log('An error has occurred ' + error))
+        getWatchers().get("/").then(response => setwatchers(response.data.filter(w => w.status === true)))
+        .then(error => console.log('An error has occurred 2' + error))
     }
 
     const mother_home = () => {
@@ -54,53 +55,64 @@ const ActiveHome = () => {
             renderItem={({item}) => (
             <>
             <ThemedCard style={[styles.outer_card]}>
-                <ThemedCard style={[styles.card_left]}>
+                <ThemedView style={[{flexDirection: 'row', justifyContent: 'space-between',  backgroundColor: '#9FAEA4'}]}>
                     <Image style={styles.img} 
                         source={{ uri: item.picture}}
 
                     />
+                    <ThemedCard style={[styles.card_right]}>
+                        <ThemedText style={[styles.card_text, {fontSize: 10, textAlign: 'left', marginLeft: 15, marginTop: 10}]}>
+                            {item.about}
+                        </ThemedText>
+                    </ThemedCard>
+                </ThemedView>
 
-                    <ThemedView style={[styles.side_circle, {marginRight:10}]}>
+                <ThemedView style={[{flexDirection: 'row', backgroundColor: '#9FAEA4'}]}>
+                    <ThemedView style={[{ backgroundColor: '#9FAEA4', width: '50%'}]}>
+                        <ThemedView style={[{flexDirection: 'row', justifyContent: 'space-between', backgroundColor: '#9FAEA4'}]}>
+                            <ThemedText style={[styles.card_text, {color: '#000000'}]}>
+                                {item.firstname} {item.lastname}
+                            </ThemedText>
+                            <ThemedView style={[styles.side_circle, {}]}></ThemedView>
+                        </ThemedView> 
+                        <Spacer height={10} />
+                         <ThemedView style={[{flexDirection: 'row', justifyContent: '', backgroundColor: '#9FAEA4'}]}>
+                             <ThemedText style={[styles.card_text, {color: '#CF4545'}]}>
+                                Location
+                            </ThemedText>
+                            <ThemedText style={[styles.card_text, {color: '#000000', marginLeft: 25}]}>
+                                {item.state}
+                            </ThemedText>
+                        </ThemedView> 
+                         <ThemedView style={[{flexDirection: 'row', justifyContent: '', backgroundColor: '#9FAEA4'}]}>
+                            <ThemedText style={[styles.card_text, {color: '#CF4545'}]}>
+                                Rate
+                            </ThemedText>
+                            <ThemedText style={[styles.card_text, {color: '#000000', marginLeft: 47}]}>
+                                ${item.hour_rate}/H
+                            </ThemedText>
+                        </ThemedView> 
                     </ThemedView>
+                    <ThemedView style={[{backgroundColor: '#9FAEA4', width: '50%', marginTop: 20, marginLeft: 15}]}>
+                        <ThemedButton onPress={async() => {
+                            try{
+                                await AsyncStorage.setItem("active_id", JSON.stringify(item.id))
+                                router.push("/view_profile")
+
+                            }catch(error){
+                                console.log('An error has occurred' + error)
+                            }
+                        }} 
+                        style={[styles.btn, {width: 100, alignSelf: 'center'}]}
+                        >
+                            <ThemedText style={[styles.btn_text]}>view more</ThemedText>
+                        </ThemedButton>
+                    </ThemedView>
+
+                </ThemedView>
                     
-                    <ThemedText style={[styles.card_text, {color: '#000000'}]}>
-                        {item.firstname}
-                    </ThemedText>
-                    
-                    <ThemedView style={[styles.sub_text]}>
-                        <ThemedText style={[styles.card_text, {color: '#CF4545'}]}>
-                            Location
-                        </ThemedText>
-                        <ThemedText style={[styles.card_text, {color: '#000000'}]}>
-                            {item.state}
-                        </ThemedText>
-                    </ThemedView>
-
-                    <ThemedView style={[styles.sub_text]}>
-                        <ThemedText style={[styles.card_text, {color: '#CF4545'}]}>
-                            Rate
-                        </ThemedText>
-                        <ThemedText style={[styles.card_text, {color: '#000000'}]}>
-                            {item.hour_rate}
-                        </ThemedText>
-                    </ThemedView>
-
-                </ThemedCard>
-                <ThemedCard style={[styles.card_right]}>
-                    <ThemedText style={[styles.card_text, {fontSize: 10, textAlign: 'left'}]}>
-                        {item.about}
-                    </ThemedText>
-
-                    <Spacer height={20} />
-
-                    <ThemedButton onPress={() => router.push("/make_request")} style={[styles.btn]}>
-                        <ThemedText style={[styles.btn_text]}>Request</ThemedText>
-                    </ThemedButton>
-
-                </ThemedCard>
-
-
             </ThemedCard>
+           
             <Spacer height={20} />
             </>
 
@@ -110,6 +122,8 @@ const ActiveHome = () => {
             keyExtractor={(item) => item.id}
 
         />
+
+        <Spacer height={80} />
 
         <ThemedView style={{position: "absolute", bottom: 0}}>
             <NavigationBar1 />
@@ -135,22 +149,22 @@ const styles = StyleSheet.create({
         backgroundColor: '#9FAEA4',
         alignSelf: 'center',
         elevation: 8,
-        paddingHorizontal: 10,
+        paddingHorizontal: 30,
         paddingVertical: 10,
-        flexDirection: 'row',
-        justifyContent: 'space-between'
+        //flexDirection: 'row',
+        //justifyContent: 'space-between'
     },
     card_left: {
         width: '60%',
         paddingHorizontal: 10
     },
     card_right: {
-        width: '40%',
-        paddingHorizontal: 10
+        width: '50%',
+        paddingHorizontal: 5
     },
     img: {
-        width: '100%',
-        height: 120,
+        width: 130,
+        height: 130,
         borderRadius: 8,
         marginBottom: 10
     },
@@ -158,12 +172,12 @@ const styles = StyleSheet.create({
         fontFamily: 'InriaSerif',
         fontSize: 10,
         fontWeight: 700,
-        textAlign: 'center'
     },
     sub_text: {
         flexDirection: 'row', 
-        justifyContent: 'space-evenly',
-        backgroundColor: '#9FAEA4'
+        justifyContent: 'space-between',
+        backgroundColor: '#9FAEA4',
+        width: 100
     },
     btn: {
         backgroundColor: '#8B80B1',
@@ -179,8 +193,9 @@ const styles = StyleSheet.create({
         fontFamily: 'InriaSerif'
     },
     side_circle: {
-        width: 20,
-        height: 20,
+        width: 15,
+        height: 15,
+        //alignSelf: 'flex-end',
         backgroundColor: '#00FF00',
         borderRadius: 10
     },

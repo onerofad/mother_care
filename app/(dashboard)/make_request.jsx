@@ -8,7 +8,7 @@ import { Colors } from '../../constants/colors'
 import ThemedText from '../../components/ThemedText'
 import { useRouter } from 'expo-router'
 import CalendarPicker from 'react-native-calendar-picker'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Slider from '@react-native-community/slider'
 import ThemedCard from '../../components/ThemedCard'
 import ModalDropdown from '../../components/ModalDropdown'
@@ -17,7 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons'
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
 import KeyboardAvoidingContainer from '../../components/KeyboardAvoidingContainer'
-import { getMakeRequest } from '../API'
+import getUsers, { getMakeRequest } from '../API'
 
 
 const data = [
@@ -62,7 +62,35 @@ const MakeRequest = () => {
 
     const [rate_hour, set_rate_hour] = useState(0)
 
+    const [address, setaddress] = useState("")
+
+    const [zipcode, setzipcode] = useState("")
+
     const [modalTxt, set_modal_text] = useState("")
+
+    const [user, setUsers] = useState([])
+
+    let child_no = 0
+
+    useEffect(() => {
+        getAllUsers()
+    },[])
+
+    const getAllUsers = async () => {
+        let em = await AsyncStorage.getItem("email")
+    
+        getUsers().get('/').then(response => setUsers(response.data.filter(u => u.email == em)))
+        .catch(error => console.Console.log('An error has occurred ' + error))
+    }
+
+    let location
+    let mother_name
+    let picture
+      user.map((u) => {
+        location = u.state + ', ' + u.city
+        mother_name = u.firstname
+        picture = u.picture
+    })
 
     const uniqueId = Array.from(
         { length: 5 }, 
@@ -70,36 +98,62 @@ const MakeRequest = () => {
     );
 
     const onSubmit =  async () => {
-    if(selectedStartDate == null || startTime == "" || endTime == "" || child_option == "" || rate_hour == 0 || watcher_role == ""){
+    if(selectedStartDate == null || startTime == "" || endTime == "" || child_option == "" || rate_hour == 0 || watcher_role == "" || address == "" || zipcode == ""){
         set_modal_text("Fill in all fields")
         setVisible1(true)
-    }else{
+    }else if(child_array.length === 0){
+        set_modal_text("No child added")
+        setVisible1(true)
+    }
+    else{
         try{        
             setVisible(true)
             let email = await AsyncStorage.getItem("email")
-            //let items = {selectedStartDate, startTime, endTime, watcher_role, child_option, rate_hour, email}
+            let email_to = await AsyncStorage.getItem("email_to")
 
-            setTimeout(() => {
-                setVisible(false)
-                child_array.map(child => {
-                    let id = child.id
-                    let selectedStartDate = child.selectedStartDate
-                    let startTime = child.startTime
-                    let endTime = child.endTime
-                    let watcher_role = child.watcher_role
-                    let child_option = child.child_option
-                    let rate_hour = child.rate_hour
+            if(email_to == null){
+                let child_option2
+                setTimeout(() => {
+                    setVisible(false)
+                    child_array.map(child => {
+                            child_option2 += child.child_option + ', '
+                        
+                    })
 
-                    let items = {id, selectedStartDate, startTime, endTime, watcher_role, child_option, rate_hour, email}
+                    let items = {selectedStartDate, startTime, endTime, watcher_role, mother_name, child_no, child_option2, rate_hour, email, location, address, zipcode, picture}
                     getMakeRequest().post('/', items)
                     .then(() => router.push("/mother_home"))
                     .catch(function(error){
                         console.log(error.toJSON());
 
                     })
-                })
-                
-            },3000)
+                },3000)
+            }else{
+                let child_option2
+                setTimeout( () => {
+                    setVisible(false)
+                    child_array.map(child => {
+                            child_option2 += child.child_option + ', '
+                        
+                    })
+
+                    let items = {selectedStartDate, startTime, endTime, watcher_role, mother_name, child_no, child_option2, rate_hour, email, location, address, zipcode, email_to, picture}
+                    
+                    getMakeRequest().post('/', items)
+                    .then(async() => {
+                        await AsyncStorage.removeItem("email_to")
+                        router.push("/mother_home")
+                    })
+                    .catch(function(error){
+                        console.log(error.toJSON());
+                    })
+
+
+                },3000)
+
+            }
+
+            
 
         }catch(error){
             console.log('An error has occured 2' + error)
@@ -117,16 +171,17 @@ const MakeRequest = () => {
     }
 
     const addChild = async () => {
-        if(selectedStartDate == null || startTime == "" || endTime == "" || child_option == "" || rate_hour == 0 || watcher_role == ""){
+        if(selectedStartDate == null || startTime == "" || endTime == "" || child_option == "" || rate_hour == 0){
             set_modal_text("Fill in all fields")
             setVisible1(true)
         }else{
             try{
                 let em = await AsyncStorage.getItem("email")
-                let items = {'id': uniqueId, 'selectedStartDate' : selectedStartDate, 'startTime' : startTime, 'endTime' : endTime, 'watcher_role' : watcher_role, 'child_option' : child_option, 'rate_hour' : rate_hour, 'email' : em}
+                //let items = {'id': uniqueId, 'selectedStartDate' : selectedStartDate, 'startTime' : startTime, 'endTime' : endTime, 'watcher_role' : watcher_role, 'child_option' : child_option, 'rate_hour' : rate_hour, 'email' : em, 'location' : loc, 'mother' : mother}
+                let items = {'id': uniqueId, 'child_option' : child_option}
 
                 setchild_array(prevItems => [...prevItems, items])
-                setVisible2(true)
+                //setVisible2(true)
             }catch(error){
                 console.log('An error has occurred ' + error)
             }
@@ -136,8 +191,6 @@ const MakeRequest = () => {
     const removeChild = (childId) => {
         const child = child_array.filter(c => c.id !== childId)
         setchild_array(child)
-
-        //let index = child_array.findIndex(c => c.id === childId)
     }
 
   return (
@@ -150,7 +203,10 @@ const MakeRequest = () => {
                 <MaterialIcons
                     name="arrow-back-ios"
                     size={30}
-                    onPress={() => router.push("/mother_home")}
+                    onPress={async() => {
+                        await AsyncStorage.removeItem("email_to")
+                        router.push("/mother_home")
+                    }}
                 />
             </ThemedView>
 
@@ -227,18 +283,6 @@ const MakeRequest = () => {
 
             <Spacer height={10} />
 
-            <ThemedCard style={[styles.card_box]}>
-                <TextInput 
-                    style={[styles.textInput, styles.text]} 
-                    textAlignVertical='top'
-                    placeholder='Share what you need the WATCHER to do......' 
-                    onChangeText={(role) => setWatcherRole(role)}
-                    value={watcher_role}
-                />
-            </ThemedCard>
-
-            <Spacer height={10} />
-
             <ThemedCard style={[styles.outer_card,]}>
                 <ThemedView style={[styles.card_view]}>
                     <Dropdown
@@ -278,6 +322,82 @@ const MakeRequest = () => {
 
             <Spacer height={20} />
 
+           {/* <FlatList
+                data={child_array}
+                renderItem={({item}) =>
+                    <ThemedCard style={[styles.outer_card1, {paddingHorizontal: 20, paddingVertical: 10}]}>
+                        <ThemedText>{item.child_option}</ThemedText>
+                        <ThemedText>{++child_no}</ThemedText>
+                    </ThemedCard>
+                }
+                keyExtractor={item => item.id}
+
+            />*/}
+
+            {
+                child_array.map(item => (
+                    <ThemedView key={item.id}>
+                    <ThemedView style={[styles.outer_card1, {paddingHorizontal: 20, paddingVertical: 10}]}>
+                        <ThemedText>{item.child_option}</ThemedText>
+                        <ThemedText>{++child_no}</ThemedText>
+                    </ThemedView>
+                    <Spacer height={10} />
+                    </ThemedView>
+                ))
+            }
+
+            <Spacer height={20} />
+
+            <ThemedCard style={[{flexDirection: 'row', justifyContent: ''}]}>
+                <ThemedView style={{width: '70%'}}>
+                    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} >
+                        <ThemedText style={[styles.textFont, {textAlign: 'left', paddingLeft: 5}]}>ADDRESS</ThemedText>
+                        <TextInput 
+                            style={[styles.textInput, styles.text, {height: 50, paddingVertical: 5}]} 
+                            onChangeText={(addr) => setaddress(addr)}
+                            value={address}
+                            enablesReturnKeyAutomatically={true}
+                            multiline={true}
+                        />
+                    </KeyboardAvoidingView>
+                </ThemedView>
+                
+                <ThemedView style={{width: '60%'}}>
+                    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} >
+                        <ThemedText style={[styles.textFont, {textAlign: 'left'}]}>ZIPCODE</ThemedText>
+                        <TextInput 
+                            style={[styles.textInput, styles.text, {height: 50, backgroundColor: '#D9D9D9', paddingVertical: 5}]} 
+                            onChangeText={(zip) => setzipcode(zip)}
+                            value={zipcode}
+                            enablesReturnKeyAutomatically={true}
+                            multiline={true}
+
+
+                        />
+                    </KeyboardAvoidingView>
+
+                </ThemedView>
+            </ThemedCard>
+
+            <Spacer height={20} />
+
+            <ThemedCard style={[styles.card_box]}>
+                <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
+
+                    <TextInput 
+                        style={[styles.textInput, styles.text]} 
+                        textAlignVertical='top'
+                        placeholder='Share what you need the WATCHER to do......' 
+                        onChangeText={(role) => setWatcherRole(role)}
+                        value={watcher_role}
+                        multiline={true}
+                        enablesReturnKeyAutomatically={true}
+
+                    />
+                </KeyboardAvoidingView>
+            </ThemedCard>
+
+            <Spacer height={30} />
 
             <ThemedButton
                 style={[styles.btn]}
@@ -285,6 +405,8 @@ const MakeRequest = () => {
             >
                 <ThemedText style={[styles.btn_text]}>SUBMIT</ThemedText>
             </ThemedButton>
+
+            <Spacer height={20} />
         
         <Modal
             animationType='none'
@@ -299,7 +421,7 @@ const MakeRequest = () => {
                     style={{alignSelf: 'flex-end'}}
                     onPress={() => setVisible2(false)}
                 />
-                <ThemedText style={[styles.loading_text, {fontSize: 14}]}>VIEW CHILDREN</ThemedText>
+                <ThemedText style={[styles.loading_text, {fontSize: 14}]}>CHILD ADDED</ThemedText>
                 <ThemedView style={[{marginVertical: 20, justifyContent: 'space-between', flexDirection: 'row'}]}>
                   
                     <FlatList
@@ -383,7 +505,7 @@ const styles = StyleSheet.create({
     },
     textFont: {
         fontFamily: 'InriaSerifBold', 
-        fontSize: 13, 
+        fontSize: 12, 
         fontWeight: 400, 
         textAlign: 'center'
     },
@@ -413,9 +535,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
     },
-       outer_card1: {
+    outer_card1: {
         width: '100%',
-        height: 150,
+        height: 53,
         backgroundColor: '#CBE9F4',
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -453,9 +575,14 @@ const styles = StyleSheet.create({
     },
     card_box: {
         backgroundColor: '#fff', 
-        paddingHorizontal: 10, 
-        paddingVertical: 10,
-        alignSelf: 'center'
+        paddingHorizontal: 0, 
+        paddingVertical: 0,
+        alignSelf: 'center',
+        borderColor: '#000',
+        borderWidth: 1,
+        borderStyle: 'solid',
+        width: '100%',
+        borderRadius: 0
     },
     textInput: {
         height: 100,
@@ -469,7 +596,10 @@ const styles = StyleSheet.create({
         color: '#000000'
     },
     modal_loading: {
-        backgroundColor: '#ffffff',
+          backgroundColor: '#f5f5f5',
+        borderStyle: 'solid',
+        borderWidth: 1,
+        borderColor: '#000',
         width: 180,
         height: 100,
         borderRadius: 10,
@@ -487,7 +617,10 @@ const styles = StyleSheet.create({
         fontWeight: 400
     },
     errorText: {
-        backgroundColor: '#ffffff',
+         backgroundColor: '#f5f5f5',
+        borderStyle: 'solid',
+        borderWidth: 1,
+        borderColor: '#000',
         width: 240,
         height: 100,
         borderRadius: 10,

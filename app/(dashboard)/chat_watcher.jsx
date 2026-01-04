@@ -1,4 +1,4 @@
-import { FlatList, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
+import { FlatList, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Image, TextInput, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import ThemedView from '../../components/ThemedView'
 import ThemedHeader from '../../components/ThemedHeader'
@@ -12,13 +12,15 @@ import { useRouter } from 'expo-router'
 import NavigationBar1 from '../../components/NavigationBar1'
 import ThemedButton from '../../components/ThemedButton'
 import { Dropdown } from 'react-native-element-dropdown'
-import getUsers, { getChats, getWatchers } from '../API'
+import getUsers, { getChats, getMakeRequest, getWatchers } from '../API'
 import KeyboardAvoidingContainer from '../../components/KeyboardAvoidingContainer'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const ChatWatcher = () => {
 
     const [seekers, setSeekers] = useState([])
+
+    const [requests, setRequests] = useState([])
 
     const [chat, setchat] = useState("")
 
@@ -45,10 +47,17 @@ const ChatWatcher = () => {
 
     useEffect(() => {
         getAllSeekers()
+        getAllRequests()
     }, [])
 
     const getAllSeekers = () => {
         getUsers().get("/").then(response => setSeekers(response.data))
+        .catch(error => console.log('An error has occurred ' + error))
+    }
+
+    const getAllRequests = async() => {
+        let em = await AsyncStorage.getItem("email")
+        getMakeRequest().get('/').then(response => setRequests(response.data.filter(r => r.email_to == em)))
         .catch(error => console.log('An error has occurred ' + error))
     }
 
@@ -108,6 +117,21 @@ const ChatWatcher = () => {
         </ThemedView>
 
         <ThemedHeader>QUICK WATCH</ThemedHeader>
+
+        <Spacer height={30} />
+
+        {
+            requests.map(m => (
+                <ThemedView style={{width: '90%', height: 100, backgroundColor: '#EBE5E5', marginHorizontal: 20}}>
+                    <Image
+                        style={{wisth: 70, height: 70}}
+                    />
+                    <ThemedText>{m.email}</ThemedText>
+                </ThemedView>
+            ))
+        }
+
+        
 
         <Spacer height={30} />
 

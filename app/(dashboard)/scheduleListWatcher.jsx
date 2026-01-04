@@ -1,42 +1,76 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Modal, ScrollView, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import ThemedView from '../../components/ThemedView'
 import Spacer from '../../components/Spacer'
 import ThemedHeader from '../../components/ThemedHeader'
-import { MaterialIcons } from '@expo/vector-icons'
+import { FontAwesome, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import ThemedCard from '../../components/ThemedCard'
 import ThemedText from '../../components/ThemedText'
 import ThemedButton from '../../components/ThemedButton'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { getMakeRequest } from '../API'
+import { getMakeRequest, getWatchers } from '../API'
 import { Colors } from '../../constants/colors'
 
-const ScheduleList = () => {
+const ScheduleListWatcher = () => {
 
   const router = useRouter()
 
   const [requests, setRequests] = useState([])
 
+  const [watchers, setwatchers] = useState([])
+
   const [email, setEmail] = useState("")
+
+  const [visible2, setvisible2] = useState(false)
 
 
   useEffect(() => {
     getAllMakeRequest()
+    getAllWatchers()
   },[])
 
   const getAllMakeRequest = async () => {
     getMakeRequest().get("/").then(response => setRequests(response.data))
-    .catch(error => console.log('An error has occurred  2' + error))
+    .catch(error => console.log('An error has occurred ' + error))
 
     let em = await AsyncStorage.getItem("email")
     setEmail(em)
   }
 
-  const cancelrequest = (requetId) => {
-    let id = requetId
-    getMakeRequest().delete(`/${id}/`).then(() => router.push('/scheduleList'))
+   const getAllWatchers = async () => {
+    let em = await AsyncStorage.getItem("email")
+    setEmail(em)
+
+    getWatchers().get("/").then(response => setwatchers(response.data.filter(u => u.email == em)))
+    .catch(error => console.log('An error has occurred ' + error))
   }
+
+  const accept = async (id) => {
+
+    const request = requests.filter(u => u.email_to === email && u.status === true && u.confirm === false)[0]
+
+    if(request){
+        setvisible2(true)
+    }else{
+        let status = true
+        let email_to = await AsyncStorage.getItem("email")
+
+        let picture2
+        let watcher_name
+        watchers.map(w => {
+            picture2 = w.picture
+            watcher_name = w.firstname + ' ' + w.lastname
+        })
+        
+
+        let item = {status, email_to, picture2, watcher_name}
+        getMakeRequest().patch(`/${id}/`, item).then(() => router.push('/chat_watcher1'))
+        .catch(error => console.log('An error has occurred ' + error))
+    }
+  }
+
+  
   return (
     <ScrollView style={styles.container}>
     <ThemedView >
@@ -48,21 +82,21 @@ const ScheduleList = () => {
                     name='arrow-back-ios'
                     size={30}
                     style={styles.backIcon}
-                    onPress={() => router.push("/mother_home")}
+                    onPress={() => router.push("/watcher_home")}
                 />
-                <ThemedHeader style={styles.schedule_text}>My Request List</ThemedHeader>
+                <ThemedHeader style={styles.schedule_text}>Request List</ThemedHeader>
             </ThemedView>
 
             <Spacer height={40} />
             {
             requests.map((r) => {
-                if(r.email == email && r.status === false){
-                    let dateObj = new Date(r.selectedStartDate)
+                let dateObj = new Date(r.selectedStartDate)
                     let month   = dateObj.getUTCMonth() + 1;
                     let day     = dateObj.getUTCDate();
                     let year    = dateObj.getUTCFullYear();
 
                     let newDate = year + "/" + month + "/" + day;
+                    if(r.email_to === "" && r.status === false){
                     return(
                         <ThemedCard key={r.id} style={styles.outer_card}>
                             <ThemedText 
@@ -139,31 +173,43 @@ const ScheduleList = () => {
                                                            
                                         </ThemedView>
                                         <ThemedButton
-                                            onPress={() => alert(r.id)}
+                                            onPress={() => accept(r.id)}
                                             style={[styles.btn, styles.column, {alignSelf: 'center'}]}
                                         >
-                                            <ThemedText style={[styles.card_text, {color: '#ffffff', textAlign: 'center'}]}>Pending</ThemedText>
+                                            <ThemedText style={[styles.card_text, {color: '#ffffff', textAlign: 'center'}]}>Accept</ThemedText>
                                         </ThemedButton>
                             </ThemedCard>
-                                <ThemedButton
-                                    onPress={() => cancelrequest(r.id)}
-                                    style={[styles.btn, styles.column, {alignSelf: 'center', width: 150, backgroundColor: '#D9ECF3'}]}
-                                >
-                                    <ThemedText style={[styles.card_text, {color: '#000', textAlign: 'center'}]}>Cancel Request</ThemedText>
-                                </ThemedButton>
                         </ThemedCard>
                )
             }
-        })
+            
+            })
                
     }
+    <Modal
+            transparent
+            visible={visible2}
+            animationType='none'
+        >
+            <ThemedView style={[styles.errorText]}>
+                <FontAwesome 
+                    color="#000000"
+                    name='times' 
+                    size={15} 
+                    style={{alignSelf: 'flex-end'}}
+                    onPress={() => setvisible2(false)}
+                />
+                <MaterialCommunityIcons color="red" name='cancel' size={40} />
+                <ThemedText style={[styles.loading_text, {fontSize: 14}]}>You have a pending request package</ThemedText>
+            </ThemedView>
+        </Modal>
 
     </ThemedView>
     </ScrollView>
   )
 }
 
-export default ScheduleList
+export default ScheduleListWatcher
 
 const styles = StyleSheet.create({
 
@@ -174,6 +220,30 @@ const styles = StyleSheet.create({
         position: 'relative', 
         left: -50
     },
+    loading_text: {
+        textAlign: 'center', 
+        fontFamily: 'IrishGrover',
+        fontSize: 18,
+        fontStyle: 'normal',
+
+        fontWeight: 400
+    },
+    errorText: {
+        backgroundColor: '#f5f5f5',
+        borderStyle: 'solid',
+        borderWidth: 1,
+        borderColor: '#000',
+        width: 240,
+        height: 120,
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignSelf: 'center',
+        paddingHorizontal: 20,
+        marginTop: 200,
+        elevation: 40,
+        paddingVertical: 10
+    },
     schedule_text: {
         fontSize: 24
     },
@@ -181,7 +251,7 @@ const styles = StyleSheet.create({
         paddingVertical: 25, 
         paddingHorizontal: 25,
         alignSelf: 'center', 
-        height: 480, 
+        //height: 480, 
         backgroundColor: Colors.primary,
         marginVertical: 10
     },

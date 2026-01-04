@@ -59,4 +59,16 @@ export function getChats(){
     )
 }
 
+export function getCards(){
+    return(
+        axios.create({
+            baseURL: "https://mother-db-3weq.vercel.app/api/cards/",
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+    )
+}
+
 

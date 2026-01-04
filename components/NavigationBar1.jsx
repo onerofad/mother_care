@@ -42,7 +42,7 @@ const NavigationBar1 = () => {
   }
 
   const chat_router = () => {
-    router.push("/chat_home")
+    router.push("/chat_accepted")
   }
 
   const timer_router = () => {

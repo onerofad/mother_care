@@ -1,4 +1,4 @@
-import { SafeAreaView, ActivityIndicator, Pressable, StyleSheet, Text, TextInput, Image, Modal } from 'react-native'
+import { SafeAreaView, ActivityIndicator, Pressable, StyleSheet, Text, TextInput, Image, Modal, KeyboardAvoidingView, Platform } from 'react-native'
 import { useRouter } from 'expo-router'
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useMemo } from 'react';
@@ -45,16 +45,22 @@ const WatcherRegister2 = () => {
 
   const router = useRouter()
 
-  const [progress, setProgress] = useState(0)
+  const [progress, setProgress] = useState(0.5)
 
   const [skills, setskills] = useState("")
+
   const [about, setaboutme] = useState("")
 
-  const [cpr, setcpr] = useState("false")
-  const [firstaid, setfirstaid] = useState("false")
+  const [cpr, setcpr] = useState(false)
+
+  const [firstaid, setfirstaid] = useState(false)
+
+  const [backcheck, setbackcheck] = useState(false)
 
   const [state, setstate_location] = useState("")
+
   const [city, setcity_location] = useState("")
+
   const [hour_rate, sethour_rate] = useState("")
 
   const [modalTxt, setmodalText] = useState("")
@@ -106,7 +112,7 @@ const WatcherRegister2 = () => {
         handleUpload(newfile)
       }
   
-      if(state !== "" || city !== "" || hour_rate !== "" || cpr !== false || skills !== "" || about !== "" || firstaid !== false ){
+      if(state !== "" || city !== "" || hour_rate !== "" || skills !== "" || about !== "" || image !== null){
           setProgress(progress + 0.5)
       }
   
@@ -131,12 +137,18 @@ const WatcherRegister2 = () => {
 
     const checkCertified = (value) => {
         //alert(value)
-        if(value === 'cpr'){
-            setcpr("true")
-            setfirstaid("false")
-        }else if(value === 'firstaid'){
-            setfirstaid("true")
-            setcpr("false")
+        if(value === 'cpr' && cpr === true){
+            setcpr(false)
+        }else if(value === 'firstaid' && firstaid === true){
+            setfirstaid(false)
+        }else if(value === 'backcheck' && backcheck === true){
+            setbackcheck(false)
+        }else if(value === 'cpr' && cpr === false){
+            setcpr(true)
+        }else if(value === 'firstaid' && firstaid === false){
+            setfirstaid(true)
+        }else if(value === 'backcheck' && backcheck === false){
+            setbackcheck(true)
         }
     }
 
@@ -154,14 +166,18 @@ const WatcherRegister2 = () => {
         }else if(about === ""){
             setmodalText("About me is required")
             setvisible2()
+        }else if(about.length < 69){
+            setmodalText("Minimum of 70 characters")
+            setvisible2()
         }/*else if(cpr === "false" && firstaid === "false"){
             setmodalText("Select certification")
             setvisible2()
-        }*/else if(hour_rate === ""){
-            setmodalText("Enter hour rate")
-            setvisible2()
-        }else if(image === null){
+        }*/
+        else if(image === null){
             setmodalText("Select an image")
+            setvisible2()
+        } else if(hour_rate === ""){
+            setmodalText("Enter hour rate")
             setvisible2()
         }else{
             setvisible1(true)
@@ -175,7 +191,7 @@ const WatcherRegister2 = () => {
                     await AsyncStorage.setItem("id", JSON.stringify(watcher.id))
                     
                     let id = watcher.id
-                    let items = {state, city, skills, about, hour_rate, picture}
+                    let items = {state, city, skills, about, hour_rate, picture, cpr, firstaid, backcheck}
                     getWatchers().patch(`/${id}/`, items)
                     router.push("/watcher_home")
                     
@@ -247,34 +263,43 @@ const WatcherRegister2 = () => {
 
         <Spacer height={20} />
 
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
         <TextInput 
-            style={styles.textInput} 
+            style={[styles.textInput, {height: 80}]} 
             placeholder='Skills' 
             value={skills}
+            multiline={true}
+            enablesReturnKeyAutomatically={true}
             onChangeText={(txt) => setskills(txt)}
         />
+        </KeyboardAvoidingView>
 
         <Spacer height={20} />
 
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
         <TextInput 
             style={[styles.textInput, {height: 80}]} 
             placeholder='About Me...' 
             value={about}
+            multiline={true}
+            enablesReturnKeyAutomatically={true}
             onChangeText={(txt) => setaboutme(txt)}
         />
+        </KeyboardAvoidingView>
 
         <Spacer height={20} />
 
-        {/*<ThemedView style={[styles.certified]}>
+        <ThemedView style={[styles.certified]}>
             <ThemedButton onPress={() => checkCertified('cpr')} style={[styles.certified_view]}>
                 <ThemedText style={[styles.certified_text]}>
                     CPR Certified
                 </ThemedText>
                 {
-                    (cpr === "true") ? 
+                    (cpr === true) ? 
                      <ThemedView style={[styles.rect]}></ThemedView>
                     :
-                    ''
+                    <ThemedView style={[styles.rect1]}></ThemedView>
+
                 }
                
             </ThemedButton>
@@ -283,19 +308,34 @@ const WatcherRegister2 = () => {
                     First aid Certified
                 </ThemedText>
                  {
-                    (firstaid === "true") ? <ThemedView style={[styles.rect]}></ThemedView>
+                    (firstaid === true) ? <ThemedView style={[styles.rect]}></ThemedView>
                     :
-                    ''
+                    <ThemedView style={[styles.rect1]}></ThemedView>
+
                  }
             </ThemedButton>
-        </ThemedView> */}
+        </ThemedView> 
 
-        {/*<Spacer height={20} />*/}
+        <Spacer height={10} />
 
-       {/* <ThemedView style={{paddingHorizontal: 15}}>
+        <ThemedButton onPress={() => checkCertified('backcheck')} style={[styles.certified_view, {alignSelf: 'center', width: 160, borderColor: '#000', borderWidth: 1, borderStyle: 'solid'}]}>
+                <ThemedText style={[styles.certified_text]}>
+                    Background check
+                </ThemedText>
+                 {
+                    (backcheck === true) ? <ThemedView style={[styles.rect]}></ThemedView>
+                    :
+                <ThemedView style={[styles.rect2]}></ThemedView>
+
+                 }
+        </ThemedButton>
+
+        <Spacer height={20} />
+
+        <ThemedView style={{paddingHorizontal: 0}}>
             <ThemedText style={{
                 color: '#000',
-                fontSize: 12,
+                fontSize: 11,
                 fontWeight: 400,
                 fontFamily: 'InknutAntiquaBold'
             }}>
@@ -306,11 +346,11 @@ const WatcherRegister2 = () => {
         <Spacer height={20} />
         
         <ThemedText style={[styles.optional_text]}>Optional</ThemedText>
-        <ThemedButton style={[styles.btn]}>
+        <ThemedButton style={[styles.btn, {borderColor: '#000', borderWidth: 1, borderStyle: 'solid'}]}>
             <ThemedText style={[styles.btn_text]}>
                 Background check
             </ThemedText>
-        </ThemedButton>*/}
+        </ThemedButton>
 
         <Spacer height={40} />
 
@@ -350,6 +390,7 @@ const WatcherRegister2 = () => {
         />
 
         <Spacer height={40} />
+
         <ThemedButton
             style={{backgroundColor: Colors.primary,  height: 57,
                  width: 146, borderRadius: 7, alignSelf: 'center'
@@ -360,6 +401,8 @@ const WatcherRegister2 = () => {
         </ThemedButton>
 
         </ThemedCard>
+
+        <Spacer height={30} />
 
         <Modal 
             animationType='none'
@@ -415,7 +458,7 @@ const styles = StyleSheet.create({
         height: 57,
         borderWidth: 1,
         borderColor: '#000000',
-        padding: 20
+        padding: 10
     },
     section: {
         flexDirection: 'row',
@@ -433,7 +476,7 @@ const styles = StyleSheet.create({
     },
     certified: {
         flexDirection: 'row',
-        justifyContent: 'space-evenly',
+        justifyContent: 'space-between',
         alignItems: 'center'
     },
     certified_view: {
@@ -441,7 +484,7 @@ const styles = StyleSheet.create({
          width: 145,
          height: 35,
          justifyContent: 'space-between',
-         paddingHorizontal: 5,
+         paddingHorizontal: 10,
          alignItems: 'center',
          borderRadius: 10,
          flexDirection: 'row'
@@ -517,9 +560,19 @@ const styles = StyleSheet.create({
     fontStyle: 'normal'
   },
   rect: {
-    width: 20,
-    height: 20,
+    width: 15,
+    height: 15,
     backgroundColor: '#3CC535'
+  },
+  rect1: {
+    width: 15,
+    height: 15,
+    backgroundColor: '#F5F5F5'
+  },
+  rect2: {
+    width: 15,
+    height: 15,
+    backgroundColor: '#D9D9D9'
   },
   loading_text: {
         textAlign: 'center', 
@@ -529,7 +582,10 @@ const styles = StyleSheet.create({
         fontWeight: 400
     },
     errorText: {
-        backgroundColor: '#ffffff',
+         backgroundColor: '#f5f5f5',
+        borderStyle: 'solid',
+        borderWidth: 1,
+        borderColor: '#000',
         width: 240,
         height: 100,
         borderRadius: 10,
@@ -542,7 +598,10 @@ const styles = StyleSheet.create({
         paddingVertical: 10
     },
     modal_loading: {
-        backgroundColor: '#ffffff',
+         backgroundColor: '#f5f5f5',
+        borderStyle: 'solid',
+        borderWidth: 1,
+        borderColor: '#000',
         width: 180,
         height: 100,
         borderRadius: 10,
